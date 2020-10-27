@@ -17,7 +17,7 @@ public class Graph<T> {
 
     // This function adds a new vertex to the graph
     public void addVertex(T s) {
-        map.put(s, new LinkedList<T>());
+        map.put(s, new LinkedList<>());
     }
 
     // This function adds the edge
@@ -40,9 +40,7 @@ public class Graph<T> {
 
     // This function gives the count of vertices
     public void getVertexCount() {
-        System.out.println("The graph has "
-                + map.keySet().size()
-                + " vertex");
+        System.out.println("The graph has " + map.keySet().size() + " vertex");
     }
 
     // This function gives the count of edges
@@ -54,9 +52,7 @@ public class Graph<T> {
         if (bidirection) {
             count = count / 2;
         }
-        System.out.println("The graph has "
-                + count
-                + " edges.");
+        System.out.println("The graph has " + count + " edges.");
     }
 
     // This function gives whether

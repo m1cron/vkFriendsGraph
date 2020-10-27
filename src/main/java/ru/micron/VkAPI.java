@@ -7,21 +7,21 @@ import com.google.gson.JsonObject;
 import java.util.concurrent.*;
 
 public class VkAPI extends MyProxy {
-    private static String ACCESS_TOKEN;
-    private final int maxDeep;
+    private final String ACCESS_TOKEN;
+    private final int MAXDEEP;
     private final ForkJoinPool threadPool;
     private final Graph<Integer> graph;
 
     public VkAPI(String token, int maxDeep) {
         super("100", false);
-        ACCESS_TOKEN = token;
-        this.maxDeep = maxDeep;
-        graph = new Graph<>(48000, 0.75f);
+        this.ACCESS_TOKEN = token;
+        this.MAXDEEP = maxDeep;
         threadPool = new ForkJoinPool(200);
+        graph = new Graph<>(48000, 0.75f);
     }
 
     private void getFriends(Integer id, int deep) {
-        if (deep - 1 == maxDeep) {
+        if (deep - 1 == MAXDEEP) {
             return;
         }
 
@@ -37,7 +37,7 @@ public class VkAPI extends MyProxy {
             graph.addEdge(id, jsonElement.getAsInt(), true);
             friendsCounter++;
         }
-        System.out.println("======= " + id + " Pars OK! ======= | DEEP >> " + deep + " | " + friendsCounter + " |\t" + graph.getMapSize() + " | \t\t" + Thread.currentThread().getName() + " |\tthreads count >>\t" + Thread.activeCount());
+        System.out.println("======= " + id + " ======= | DEEP >> " + deep + " | " + friendsCounter + " |\t" + graph.getMapSize() + " | " + Thread.currentThread().getName() + " \t\t|\tthreads count >>\t" + Thread.activeCount());
 
         for (JsonElement jsonElement : friendsJsonArray) {
             threadPool.invoke(new RecursiveAction() {
@@ -50,8 +50,13 @@ public class VkAPI extends MyProxy {
     }
 
     public void getDeepFriends(String id) {
+        long startTime = System.currentTimeMillis();
 
         getFriends(Integer.parseInt(id), 1);
+
+        long endTime = System.currentTimeMillis();
+        System.out.println("Total execution time: " + (endTime-startTime) + "ms");
+
         System.out.println(graph.toString());
         /*graph.hasEdge(171728534, 143711919);
         graph.hasEdge(212538049, 171728534);
@@ -59,7 +64,7 @@ public class VkAPI extends MyProxy {
 
     }
 
-    public static String parseLink(Integer id) {
+    private String parseLink(Integer id) {
         return new StringBuilder("https://api.vk.com/method/friends.get?v=5.124&access_token=").append(ACCESS_TOKEN).append("&user_id=").append(id).toString();
     }
 }

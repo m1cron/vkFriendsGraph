@@ -13,7 +13,7 @@ import java.net.*;
 public class MyProxy {
     protected final Gson gson;
     private final String proxyApi;
-    private volatile Proxy proxy;
+    private Proxy proxy;
     protected final boolean useProxy;
 
     public MyProxy(String proxyPing, boolean useProxy) {
@@ -28,7 +28,7 @@ public class MyProxy {
         JsonArray proxyList = gson.fromJson(readStringFromURL(proxyApi), JsonArray.class);
         JsonObject proxyObj = (JsonObject) proxyList.get(0);
 
-        String ip = proxyObj.get("Ip").toString().replace("\"", " ").trim();
+        String ip = proxyObj.get("Ip").toString().replace("\"", "");
         int port = proxyObj.get("Port").getAsInt();
         String proxyMode = proxyObj.getAsJsonArray("Type").get(0).toString();
 
