@@ -64,22 +64,15 @@ public class MyProxy {
     }
 
     private String scanInStream(InputStream stream) {
-        BufferedReader in = new BufferedReader(new InputStreamReader(stream));
         String inputLine;
         StringBuilder response = new StringBuilder();
 
-        try {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(stream))) {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine).append("\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         return response.toString();
     }
