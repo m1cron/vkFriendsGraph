@@ -2,6 +2,7 @@ package ru.micron;
 
 public class Main {
     public static void main(String[] args)  {
-        new VkAPI(args[0], "171728534");
+        VkAPI vk = new VkAPI(args[0], 2);
+        vk.getDeepFriends("171728534");
     }
 }

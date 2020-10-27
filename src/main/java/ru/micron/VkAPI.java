@@ -1,70 +1,26 @@
 package ru.micron;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import javafx.util.Pair;
 
-import javax.naming.InsufficientResourcesException;
-import javax.swing.plaf.TableHeaderUI;
-import java.awt.image.AreaAveragingScaleFilter;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.concurrent.*;
 
 public class VkAPI extends MyProxy {
     private static String ACCESS_TOKEN;
-    private final List<List<Integer>> ids;
-    private final List<Thread> threadsList;
     private final int maxDeep;
-    private final ExecutorService executorService;
-    private final Lock lock;
+    private final ForkJoinPool threadPool;
+    private final Graph<Integer> graph;
 
-    public VkAPI(String token, String id) {
+    public VkAPI(String token, int maxDeep) {
         super("100");
-        lock = new ReentrantLock();
         ACCESS_TOKEN = token;
-        ids = Collections.synchronizedList(new ArrayList<>(16000));
-        maxDeep = 2;
-
-
-        threadsList = new ArrayList<>(1000);
-        executorService = Executors.newFixedThreadPool(100);
-        Map<Integer, List<Integer>> map = new HashMap<>();
-
-
-        Integer intId = Integer.parseInt(id);
-
-        getFriends(intId, 1);
-        while (!executorService.isShutdown()) {
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-
-        System.out.println(searchInList(178597474));
+        this.maxDeep = maxDeep;
+        graph = new Graph<>(48000, 0.75f);
+        threadPool = new ForkJoinPool(200);
     }
 
-    public boolean searchInList(Integer id) {
-        for (List<Integer> integers : ids) {
-            for (Integer integer : integers) {
-                return (integer.equals(id));
-            }
-        }
-        return false;
-    }
-
-    public void getFriends(Integer id, int deep) {
+    private void getFriends(Integer id, int deep) {
         if (deep - 1 == maxDeep) {
             return;
         }
@@ -74,20 +30,33 @@ public class VkAPI extends MyProxy {
         if (response.isJsonNull() || response.has("error")) {
             return;
         }
-        response = response.getAsJsonObject("response");
-        int idArrSize = response.get("count").getAsInt();
-        List<Integer> idArr = new ArrayList<>(idArrSize);
-        JsonArray arr = response.getAsJsonArray("items");
+        JsonArray friendsJsonArray = response.getAsJsonObject("response").getAsJsonArray("items");
 
-        for (int i = 0; i < arr.size(); i++) {
-            idArr.add(arr.get(i).getAsInt());
+        short friendsCounter = 0;
+        for (JsonElement jsonElement : friendsJsonArray) {
+            graph.addEdge(id, jsonElement.getAsInt(), true);
+            friendsCounter++;
         }
-        ids.add(idArr);
-        System.out.println("========== " + id + " Pars OK! ==========DEEP >> " + deep + "\t" + ids.size() + "\t" + Thread.currentThread().getName() + "\tthreads count >>\t" + Thread.activeCount());
+        System.out.println("======= " + id + " Pars OK! ======= | DEEP >> " + deep + " | " + friendsCounter + " |\t" + graph.getMapSize() + " | \t\t" + Thread.currentThread().getName() + " |\tthreads count >>\t" + Thread.activeCount());
 
-        for (Integer integer : idArr) {
-            executorService.execute(() -> getFriends(integer, deep + 1));
+        for (JsonElement jsonElement : friendsJsonArray) {
+            threadPool.invoke(new RecursiveAction() {
+                @Override
+                protected void compute() {
+                    getFriends(jsonElement.getAsInt(), deep + 1);
+                }
+            });
         }
+    }
+
+    public void getDeepFriends(String id) {
+
+        getFriends(Integer.parseInt(id), 1);
+        System.out.println(graph.toString());
+        /*graph.hasEdge(171728534, 143711919);
+        graph.hasEdge(212538049, 171728534);
+        graph.hasEdge(171728534, 212538049);*/
+
     }
 
     public static String parseLink(Integer id) {
