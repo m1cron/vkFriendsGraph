@@ -13,7 +13,7 @@ public class VkAPI extends MyProxy {
     private final Graph<Integer> graph;
 
     public VkAPI(String token, int maxDeep) {
-        super("100");
+        super("100", false);
         ACCESS_TOKEN = token;
         this.maxDeep = maxDeep;
         graph = new Graph<>(48000, 0.75f);

@@ -4,21 +4,24 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.*;
-import java.nio.charset.Charset;
-import java.util.Scanner;
 
 public class MyProxy {
     protected final Gson gson;
     private final String proxyApi;
     private volatile Proxy proxy;
+    protected final boolean useProxy;
 
-    public MyProxy(String proxyPing) {
+    public MyProxy(String proxyPing, boolean useProxy) {
         this.proxyApi = "https://www.proxyscan.io/api/proxy?format=json&uptime=75&last_check=600&ping=" + proxyPing;
         this.gson = new Gson();
-        //getNewProxy();
+        if ((this.useProxy = useProxy)) {
+            getNewProxy();
+        }
     }
 
     public synchronized Proxy getNewProxy() {
@@ -42,38 +45,43 @@ public class MyProxy {
             urlCon.setConnectTimeout(2000);
             urlCon.setReadTimeout(3000);
             return scanInStream(urlCon.getInputStream());
-        } catch (IOException | IllegalArgumentException e) {
-            return readStringFromURL(url, this);
+        } catch (IOException e) {
+            System.out.println("Enabled proxy!");
+            return readStringFromURL(url, getNewProxy());
         }
     }
 
-    public String readStringFromURL(String url, MyProxy myProxy) {
+    public String readStringFromURL(String url, Proxy myProxy) {
         URLConnection urlCon;
         try {
-            try {
-                urlCon = new URL(url).openConnection(myProxy.getProxy());
-                urlCon.setConnectTimeout(2000);
-                urlCon.setReadTimeout(3000);
-            } catch (IllegalArgumentException e) {
-                myProxy.getNewProxy();
-                return readStringFromURL(url, myProxy);
-            }
+            urlCon = new URL(url).openConnection(myProxy);
+            urlCon.setConnectTimeout(2000);
+            urlCon.setReadTimeout(3000);
             return scanInStream(urlCon.getInputStream());
         } catch (IOException e) {
-            return readStringFromURL(url, myProxy);
+            return readStringFromURL(url, getNewProxy());
         }
     }
 
     private String scanInStream(InputStream stream) {
-        try (Scanner scanner = new Scanner(stream, Charset.defaultCharset()).useDelimiter("\\A")) {
-            return scanner.hasNext() ? scanner.next() : "";
+        BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+
+        try {
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine).append("\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             try {
-                stream.close();
+                in.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        return response.toString();
     }
 
     public Proxy getProxy() {
