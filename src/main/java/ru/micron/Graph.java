@@ -1,11 +1,13 @@
 package ru.micron;
 
+import javafx.util.Pair;
+
 import java.util.*;
 
 public class Graph<T> {
 
     // We use Hashmap to store the edges in the graph
-    private final Map<T, List<T> > map;
+    private final Map<T, Pair<Integer, List<T> > >map;
 
     public Graph() {
         map = Collections.synchronizedMap(new HashMap<>());
@@ -16,25 +18,25 @@ public class Graph<T> {
     }
 
     // This function adds a new vertex to the graph
-    public void addVertex(T s) {
-        map.put(s, new LinkedList<>());
+    public void addVertex(T s, int deepLen) {
+        map.put(s, new Pair<>(deepLen, new LinkedList<>()));
     }
 
     // This function adds the edge
     // between source to destination
-    public synchronized void addEdge(T source,
-                        T destination,
-                        boolean bidirectional) {
+    public synchronized void addEdge(int deepLen,
+                                        T source,
+                                        T destination,
+                                        boolean bidirectional) {
 
         if (!map.containsKey(source))
-            addVertex(source);
+            addVertex(source, deepLen);
 
         if (!map.containsKey(destination))
-            addVertex(destination);
-
-        map.get(source).add(destination);
+            addVertex(destination, deepLen);
+        map.get(source).getValue().add(destination);
         if (bidirectional) {
-            map.get(destination).add(source);
+            map.get(destination).getValue().add(source);
         }
     }
 
@@ -47,7 +49,7 @@ public class Graph<T> {
     public void getEdgesCount(boolean bidirection) {
         int count = 0;
         for (T v : map.keySet()) {
-            count += map.get(v).size();
+            count += map.get(v).getValue().size();
         }
         if (bidirection) {
             count = count / 2;
@@ -67,10 +69,10 @@ public class Graph<T> {
 
     // This function gives whether an edge is present or not.
     public void hasEdge(T s, T d) {
-        if (map.get(s).contains(d)) {
-            System.out.println("The graph has an edge between " + s + " and " + d + ".");
+        if (map.get(s).getValue().contains(d)) {
+            System.out.println("The graph has an edge between " + s + " and " + d + " deep " + map.get(s).getKey());
         } else {
-            System.out.println("The graph has no edge between " + s + " and " + d + ".");
+            System.out.println("The graph has no edge between " + s + " and " + d + " deep " + map.get(s).getKey());
         }
     }
 
@@ -85,7 +87,8 @@ public class Graph<T> {
 
         for (T v : map.keySet()) {
             builder.append(v.toString()).append(": ");
-            for (T w : map.get(v)) {
+            builder.append(map.get(v).getKey().toString()).append("  ");
+            for (T w : map.get(v).getValue()) {
                 builder.append(w.toString()).append(" ");
             }
             builder.append("\n");

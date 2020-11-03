@@ -34,7 +34,7 @@ public class VkAPI extends MyProxy {
 
         short friendsCounter = 0;
         for (JsonElement jsonElement : friendsJsonArray) {
-            graph.addEdge(id, jsonElement.getAsInt(), true);
+            graph.addEdge(deep, id, jsonElement.getAsInt(), true);
             friendsCounter++;
         }
         System.out.println("======= " + id + " ======= | DEEP >> " + deep + " | " + friendsCounter + " |\t" + graph.getMapSize() + " | " + Thread.currentThread().getName() + " \t\t|\tthreads count >>\t" + Thread.activeCount());
@@ -58,9 +58,9 @@ public class VkAPI extends MyProxy {
         System.out.println("Total execution time: " + (endTime-startTime) + "ms");
 
         System.out.println(graph.toString());
-        /*graph.hasEdge(171728534, 143711919);
+        graph.hasEdge(171728534, 143711919);
         graph.hasEdge(212538049, 171728534);
-        graph.hasEdge(171728534, 212538049);*/
+        graph.hasEdge(171728534, 212538049);
 
     }
 
