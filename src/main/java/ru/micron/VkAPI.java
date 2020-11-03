@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.List;
 import java.util.concurrent.*;
 
 public class VkAPI extends MyProxy {
@@ -12,32 +13,26 @@ public class VkAPI extends MyProxy {
     private final ForkJoinPool threadPool;
     private final Graph<Integer> graph;
 
-    public VkAPI(String token, int maxDeep) {
+    public VkAPI(String maxDeep, String token) {
         super("100", false);
         this.ACCESS_TOKEN = token;
-        this.MAXDEEP = maxDeep;
+        this.MAXDEEP = Integer.parseInt(maxDeep);
         threadPool = new ForkJoinPool(200);
         graph = new Graph<>(48000, 0.75f);
     }
 
     private void getFriends(Integer id, int deep) {
-        if (deep - 1 == MAXDEEP) {
-            return;
-        }
+        if (deep - 1 == MAXDEEP) return;
 
         String stringJson = readStringFromURL(parseLink(id));
         JsonObject response = gson.fromJson(stringJson, JsonObject.class);
-        if (response.isJsonNull() || response.has("error")) {
-            return;
-        }
-        JsonArray friendsJsonArray = response.getAsJsonObject("response").getAsJsonArray("items");
+        if (response.isJsonNull() || response.has("error")) return;
 
-        short friendsCounter = 0;
+        JsonArray friendsJsonArray = response.getAsJsonObject("response").getAsJsonArray("items");
         for (JsonElement jsonElement : friendsJsonArray) {
             graph.addEdge(deep, id, jsonElement.getAsInt(), true);
-            friendsCounter++;
         }
-        System.out.println("======= " + id + " ======= | DEEP >> " + deep + " | " + friendsCounter + " |\t" + graph.getMapSize() + " | " + Thread.currentThread().getName() + " \t\t|\tthreads count >>\t" + Thread.activeCount());
+        System.out.println("======= " + id + " ======= | DEEP >> " + deep + " |\t" + graph.getMapSize() + "\t| threads count >>\t" + Thread.activeCount());
 
         for (JsonElement jsonElement : friendsJsonArray) {
             threadPool.invoke(new RecursiveAction() {
@@ -49,19 +44,18 @@ public class VkAPI extends MyProxy {
         }
     }
 
-    public void getDeepFriends(String id) {
+    public void findFriends(Integer id) {
         long startTime = System.currentTimeMillis();
-
-        getFriends(Integer.parseInt(id), 1);
-
+        getFriends(id, 1);
         long endTime = System.currentTimeMillis();
-        System.out.println("Total execution time: " + (endTime-startTime) + "ms");
+        System.out.println("Search time: " + (endTime-startTime) + "ms");
+    }
 
-        System.out.println(graph.toString());
-        graph.hasEdge(171728534, 143711919);
-        graph.hasEdge(212538049, 171728534);
-        graph.hasEdge(171728534, 212538049);
-
+    public void searchDeps(List<Integer> ids) {
+        for (int i = 1; i < ids.size(); i++) {
+            // graph.hasEdge(ids.get(0), ids.get(i));
+            // TODO write in PostgreSQL
+        }
     }
 
     private String parseLink(Integer id) {
