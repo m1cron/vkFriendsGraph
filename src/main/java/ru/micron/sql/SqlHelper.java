@@ -1,14 +1,25 @@
 package ru.micron.sql;
 
+import ru.micron.Config;
+
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class SqlHelper {
-    private final ConnectionFactory connectionFactory;
+    protected final ConnectionFactory connectionFactory;
 
-    public SqlHelper(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
+    public SqlHelper() {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        connectionFactory = () ->
+                DriverManager.getConnection(Config.get().getDb_url(),
+                                            Config.get().getDb_user(),
+                                            Config.get().getDb_password());
     }
 
     public void execute(String sql) {
