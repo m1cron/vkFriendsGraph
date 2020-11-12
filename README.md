@@ -1,5 +1,5 @@
 # vkFriendsGraph
-### Java Junior/Middle task
+### Java Junior task
 
 `Входные данные:` <br/>
 <pre>
