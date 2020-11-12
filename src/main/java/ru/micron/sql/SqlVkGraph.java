@@ -3,37 +3,35 @@ package ru.micron.sql;
 import ru.micron.Config;
 import ru.micron.VkDeep;
 
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 public class SqlVkGraph {
-    protected final ConnectionFactory connectionFactory;
+    private final SqlHelper sqlHelper;
 
     public SqlVkGraph(String dbUrl, String dbUser, String dbPassword) {
-        connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
+        sqlHelper = new SqlHelper(() -> DriverManager.getConnection(dbUrl, dbUser, dbPassword));
     }
 
     public void clearVk() {
-        try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement("DELETE FROM vk_graph")) {
-            ps.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        sqlHelper.execute("DELETE FROM vk_graph");
     }
 
     public void add(VkDeep vk) {
-        try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement("INSERT INTO vk_graph (src_id, dest_id, deep) VALUES (?, ?, ?)")) {
-            ps.setInt(1, vk.getSrcId());
-            ps.setInt(2, vk.getDestId());
-            ps.setInt(3, vk.getDeep());
-            ps.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        sqlHelper.transactionalExecute(conn -> {
+            try (PreparedStatement ps = conn.prepareStatement("INSERT INTO vk_graph (src_id, dest_id, deep) VALUES (?, ?, ?)")) {
+                ps.setInt(1, vk.getSrcId());
+                ps.setInt(2, vk.getDestId());
+                ps.setInt(3, vk.getDeep());
+                ps.execute();
+            }
+            return null;
+        });
     }
 
     public static void main(String[] args) {
