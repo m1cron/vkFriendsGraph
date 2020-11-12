@@ -72,6 +72,10 @@ public class Graph<T> {
         return map.size();
     }
 
+    public Map<T, Pair<Integer, List<T>>> getMap() {
+        return map;
+    }
+
     // Prints the adjancency list of each vertex.
     @Override
     public String toString() {

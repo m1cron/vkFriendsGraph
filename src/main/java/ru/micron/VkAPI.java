@@ -3,6 +3,7 @@ package ru.micron;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import ru.micron.sql.SqlVkGraph;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -52,9 +53,9 @@ public class VkAPI extends MyProxy {
     }
 
     public void searchDeps(List<Integer> ids) {
+        SqlVkGraph sql = new SqlVkGraph(Config.get().getDb_url(), Config.get().getDb_user(), Config.get().getDb_password());
         for (int i = 1; i < ids.size(); i++) {
-            // graph.hasEdge(ids.get(0), ids.get(i));
-            // TODO write in PostgreSQL
+            sql.add(new VkDeep(ids.get(0), ids.get(i), graph.hasVertex(ids.get(i)) ? graph.getMap().get(ids.get(i)).getKey() : 0));
         }
     }
 
