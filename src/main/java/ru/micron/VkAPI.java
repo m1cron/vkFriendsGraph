@@ -25,7 +25,7 @@ public class VkAPI extends MyProxy {
         if (deep - 1 == MAX_DEEP) return;
 
         String stringJson = readStringFromURL(parseLink(id));
-        JsonObject response = gson.fromJson(stringJson, JsonObject.class);
+        JsonObject response = GSON.fromJson(stringJson, JsonObject.class);
         if (response.isJsonNull() || response.has("error")) return;
 
         JsonArray friendsJsonArray = response.getAsJsonObject("response").getAsJsonArray("items");
@@ -52,9 +52,8 @@ public class VkAPI extends MyProxy {
     }
 
     public void searchDeps(List<Integer> ids) {
-        SqlVk sql = new SqlVk();
         for (int i = 1; i < ids.size(); i++) {
-            sql.add(new VkDeep(ids.get(0), ids.get(i), GRAPH.hasVertex(ids.get(i)) ? GRAPH.getMap().get(ids.get(i)).getKey() : 0));
+            SqlVk.add(new VkDeep(ids.get(0), ids.get(i), GRAPH.hasVertex(ids.get(i)) ? GRAPH.getMap().get(ids.get(i)).getKey() : 0));
         }
     }
 

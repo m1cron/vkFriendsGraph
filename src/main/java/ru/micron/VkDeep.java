@@ -1,9 +1,9 @@
 package ru.micron;
 
 public class VkDeep {
-    private Integer srcId;
-    private Integer destId;
-    private Integer deep;
+    private final Integer srcId;
+    private final Integer destId;
+    private final Integer deep;
 
     public VkDeep(Integer srcId, Integer destId, Integer deep) {
         this.srcId = srcId;
@@ -21,17 +21,5 @@ public class VkDeep {
 
     public Integer getDeep() {
         return deep;
-    }
-
-    public void setSrcId(Integer srcId) {
-        this.srcId = srcId;
-    }
-
-    public void setDestId(Integer destId) {
-        this.destId = destId;
-    }
-
-    public void setDeep(Integer deep) {
-        this.deep = deep;
     }
 }

@@ -1,13 +1,13 @@
 # vkFriendsGraph
 ### Java Junior/Middle task
 
-####`Входные данные:` <br/>
+`Входные данные:` <br/>
 <pre>
 Текстовый файл, подается как параметр main метода,
 Первый ID VK исследуемый, остальные - с кем.
 </pre>
 
-####`Результат:` <br/>
+`Результат:` <br/>
 `````
 Файл-CSV:
             <ID 1>
@@ -21,7 +21,7 @@
         1,4,2
 `````
 
-####`Требования:` <br/>
+`Требования:` <br/>
 - Тестирование jUnit с максимальным покрытием кода
 - Сохранить в БД (MySQL/PostgreSQL/Redis)
 - Использовать VK API
@@ -29,3 +29,11 @@
 
 `Видео с таском` <br/>
 [![Видео](https://img.youtube.com/vi/wMRJy6RmdwU/0.jpg)](https://youtu.be/wMRJy6RmdwU)
+
+`Использование:` <br/>
+```
+$ git clone https://github.com/m1cron/vkFriendsGraph
+$ cd vkFriendsGraph
+$ mvn package
+$ java -jar vkFriendsGraph-1.0.jar [id's txt file] [out.csv] [search depth] [VK API token]
+```

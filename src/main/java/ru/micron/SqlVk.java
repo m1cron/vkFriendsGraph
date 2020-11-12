@@ -5,14 +5,15 @@ import ru.micron.sql.SqlHelper;
 import java.io.*;
 import java.sql.*;
 
-public class SqlVk extends SqlHelper {
+public class SqlVk {
+    private static final SqlHelper INSTANCE = new SqlHelper();
 
-    public void clear() {
-        execute("DELETE FROM vk_graph");
+    public static void clear() {
+        INSTANCE.execute("DELETE FROM vk_graph");
     }
 
-    public void add(VkDeep vk) {
-        transactionalExecute(conn -> {
+    public static void add(VkDeep vk) {
+        INSTANCE.transactionalExecute(conn -> {
             try (PreparedStatement ps = conn.prepareStatement("INSERT INTO vk_graph (src_id, dest_id, deep) VALUES (?, ?, ?)")) {
                 ps.setInt(1, vk.getSrcId());
                 ps.setInt(2, vk.getDestId());
@@ -23,8 +24,8 @@ public class SqlVk extends SqlHelper {
         });
     }
 
-    public void export(String csvName) {
-        execute("SELECT * FROM vk_graph", conn -> {
+    public static void export(String csvName) {
+        INSTANCE.execute("SELECT * FROM vk_graph", conn -> {
             try (ResultSet result = conn.executeQuery();
                  BufferedWriter fileWriter = new BufferedWriter(new FileWriter(csvName))) {
                 fileWriter.write("src_id,dest_id,deep\n");

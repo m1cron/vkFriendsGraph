@@ -11,21 +11,21 @@ import java.io.InputStreamReader;
 import java.net.*;
 
 public class MyProxy {
-    protected final Gson gson;
-    private final String proxyApi;
+    protected final Gson GSON;
+    private final String PROXY_API_URL;
     private Proxy proxy;
-    protected final boolean useProxy;
+    protected final boolean USE_PROXY;
 
     public MyProxy(String proxyPing, boolean useProxy) {
-        this.proxyApi = "https://www.proxyscan.io/api/proxy?format=json&uptime=75&last_check=600&ping=" + proxyPing;
-        this.gson = new Gson();
-        if ((this.useProxy = useProxy)) {
+        this.PROXY_API_URL = "https://www.proxyscan.io/api/proxy?format=json&uptime=75&last_check=600&ping=" + proxyPing;
+        this.GSON = new Gson();
+        if ((this.USE_PROXY = useProxy)) {
             getNewProxy();
         }
     }
 
     public synchronized Proxy getNewProxy() {
-        JsonArray proxyList = gson.fromJson(readStringFromURL(proxyApi), JsonArray.class);
+        JsonArray proxyList = GSON.fromJson(readStringFromURL(PROXY_API_URL), JsonArray.class);
         JsonObject proxyObj = (JsonObject) proxyList.get(0);
 
         String ip = proxyObj.get("Ip").toString().replace("\"", "");
