@@ -1,0 +1,63 @@
+app:
+  feign:
+    vk-api:
+      url: https://api.vk.com/method
+
+server:
+  port: 8080
+  servlet:
+    encoding:
+      force-response: true
+      charset: UTF-8
+  max-http-header-size: 131072
+
+spring:
+  application:
+    name: vkFriendsGraph
+  profiles:
+    include: token
+  main:
+    banner-mode: 'off'
+    allow-bean-definition-overriding: true
+  jmx:
+    enabled: false
+  mandatory-file-encoding: UTF-8
+  mvc:
+    locale: ru_RU
+    dispatch-options-request: true
+
+management:
+  server:
+    port: 8090
+  endpoint:
+    prometheus:
+      enabled: true
+    metrics:
+      enabled: true
+    health:
+      show-details: always
+      probes:
+        enabled: true
+    loggers:
+      enabled: true
+  health:
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
+    defaults:
+      enabled: true
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure.include: health,info,prometheus,loggers
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  info:
+    env:
+      enabled: true
+
+logging:
+  config: classpath:logback-spring.xml

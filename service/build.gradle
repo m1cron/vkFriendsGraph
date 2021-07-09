@@ -5,7 +5,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 springBoot {
-    mainClassName = "${servicePackage}.Main"
+    mainClassName = "${servicePackage}.Application"
 }
 
 dependencies {
@@ -13,7 +13,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation "org.springframework.boot:spring-boot-starter-undertow"
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation "org.springframework.cloud:spring-cloud-starter-sleuth"
+    implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
 
     //Swagger
     implementation "io.springfox:springfox-swagger2:$ver.swagger2"

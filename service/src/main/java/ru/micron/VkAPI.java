@@ -1,20 +1,19 @@
+/*
 package ru.micron;
 
 import java.util.List;
 import java.util.concurrent.*;
 
-public class VkAPI extends MyProxy {
+public class VkAPI {
+
   private final String ACCESS_TOKEN;
   private final int MAX_DEEP;
-  private final ForkJoinPool THREAD_POOL;
-  private final Graph<Integer> GRAPH;
+  private final ForkJoinPool threadPool = new ForkJoinPool(200);
+  private final Graph GRAPH = new Graph<>();
 
   public VkAPI(String maxDeep, String token) {
-    super("100", false);
     this.ACCESS_TOKEN = token;
     this.MAX_DEEP = Integer.parseInt(maxDeep);
-    THREAD_POOL = new ForkJoinPool(200);
-    GRAPH = new Graph<>(48000, 0.75f);
   }
 
   private void getFriends(Integer id, int deep) {
@@ -34,12 +33,11 @@ public class VkAPI extends MyProxy {
             + " ======= | DEEP >> "
             + deep
             + " |\t"
-            + GRAPH.getMapSize()
             + "\t| threads count >>\t"
             + Thread.activeCount());
 
     for (JsonElement jsonElement : friendsJsonArray) {
-      THREAD_POOL.invoke(
+      threadPool.invoke(
           new RecursiveAction() {
             @Override
             protected void compute() {
@@ -58,11 +56,13 @@ public class VkAPI extends MyProxy {
 
   public void searchDeps(List<Integer> ids) {
     for (int i = 1; i < ids.size(); i++) {
-      SqlVk.add(
+      // add
+sqlVk.add(
           new VkDeep(
               ids.get(0),
               ids.get(i),
               GRAPH.hasVertex(ids.get(i)) ? GRAPH.getMap().get(ids.get(i)).getKey() : 0));
+
     }
   }
 
@@ -74,3 +74,4 @@ public class VkAPI extends MyProxy {
         .toString();
   }
 }
+*/
