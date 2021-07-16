@@ -10,6 +10,7 @@ http://localhost:8080/swagger-ui.html
 ```
 $ git clone https://github.com/m1cron/vkFriendsGraph
 $ cd vkFriendsGraph
+$ gradle wrapper
 $ gradlew
 ```
 

@@ -27,7 +27,6 @@ spring:
     allow-bean-definition-overriding: true
   jmx:
     enabled: false
-  mandatory-file-encoding: UTF-8
   mvc:
     locale: ru_RU
     dispatch-options-request: true

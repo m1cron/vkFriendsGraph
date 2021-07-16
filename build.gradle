@@ -1,9 +1,5 @@
 buildscript {
-
     ext {
-        servicePackage = 'ru.micron'
-        servicePackageSlashes = servicePackage.replace('.', '/')
-
         ver = [
                 springBoot              : '2.3.3.RELEASE',
                 dependencyManagement    : '1.0.10.RELEASE',
