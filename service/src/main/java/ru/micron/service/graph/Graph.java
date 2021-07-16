@@ -1,48 +1,72 @@
 package ru.micron.service.graph;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class Graph {
+public class Graph<T> {
 
-  private Map<Vertex, List<Vertex>> adjVertices;
+  private Map<T, List<T>> map = new HashMap<>(1_000);
 
-  List<Vertex> getAdjVertices(String label) {
-    return adjVertices.get(new Vertex(label));
+  public void addVertex(T s) {
+    map.put(s, new ArrayList<>());
   }
 
-  public void addVertex(String label) {
-    adjVertices.putIfAbsent(new Vertex(label), new ArrayList<>());
+  public void addEdge(
+      T source, T destination, boolean bidirectional
+  ) {
+    if (!map.containsKey(source)) {
+      addVertex(source);
+    }
+
+    if (!map.containsKey(destination)) {
+      addVertex(destination);
+    }
+
+    map.get(source).add(destination);
+    if (bidirectional) {
+      map.get(destination).add(source);
+    }
   }
 
-  public void removeVertex(String label) {
-    var vertex = new Vertex(label);
-    adjVertices.values().forEach(e -> e.remove(vertex));
-    adjVertices.remove(new Vertex(label));
+  public int getVertexCount() {
+    return map.keySet().size();
   }
 
-  public void addEdge(String label1, String label2) {
-    var v1 = new Vertex(label1);
-    var v2 = new Vertex(label2);
-    adjVertices.get(v1).add(v2);
-    adjVertices.get(v2).add(v1);
+  public int getEdgesCount(boolean bidirection) {
+    int count = 0;
+    for (T v : map.keySet()) {
+      count += map.get(v).size();
+    }
+    return bidirection
+        ? count / 2
+        : count;
   }
 
-  public void removeEdge(String label1, String label2) {
-    Vertex v1 = new Vertex(label1);
-    Vertex v2 = new Vertex(label2);
-    List<Vertex> eV1 = adjVertices.get(v1);
-    List<Vertex> eV2 = adjVertices.get(v2);
-    if (eV1 != null)
-      eV1.remove(v2);
-    if (eV2 != null)
-      eV2.remove(v1);
+  public boolean hasVertex(T s) {
+    return map.containsKey(s);
+  }
+
+  public boolean hasEdge(T s, T d) {
+    return map.get(s).contains(d);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+
+    for (T v : map.keySet()) {
+      builder.append(v.toString()).append(": ");
+      for (T w : map.get(v)) {
+        builder.append(w.toString()).append(" ");
+      }
+      builder.append("\n");
+    }
+    return (builder.toString());
   }
 }

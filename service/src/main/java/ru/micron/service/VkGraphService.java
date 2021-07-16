@@ -1,33 +1,72 @@
 package ru.micron.service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.micron.dto.FriendDto;
 import ru.micron.dto.SearchResultDto;
 import ru.micron.feign.VkApiFeignClient;
+import ru.micron.service.graph.Graph;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class VkGraphService {
 
-  private final ForkJoinPool threadPool = new ForkJoinPool(128);
-
-  @Value("${app.feign.vk-api.token}")
-  private String token;
-
+  private final Graph<FriendDto> graph = new Graph<>();
   private final VkApiFeignClient vkClient;
 
-  @PostConstruct
-  public void test() {
-    System.out.println(vkClient.getUserFriendList(token, ""));
+  public SearchResultDto startSearch(
+      String token, long sourceId, List<Long> destinationIds, byte searchDepth
+  ) {
+    addFriends(token, sourceId, 0, searchDepth);
+
+    List<FriendDto> friendDtoList = new ArrayList<>(destinationIds.size() * searchDepth);
+
+    for (var id : destinationIds) {
+      for (byte i = 1; i <= searchDepth; i++) {
+        var friendDto = new FriendDto().setId(id).setDepth(i);
+        if (!graph.hasVertex(friendDto)) {
+          friendDto.setDepth(-1);
+        }
+        friendDtoList.add(friendDto);
+      }
+    }
+    return new SearchResultDto()
+        .setSourceId(sourceId)
+        .setFriends(friendDtoList);
   }
 
-  public SearchResultDto startSearch(
-      String vkToken, Long sourceId, List<Long> destinationIds, Byte searchDepth
-  ) {
-    return new SearchResultDto();
+  private void addFriends(String token, long id, int curDepth, int depth) {
+    if (curDepth - 1 == depth) {
+      return;
+    }
+    log.info("id - {}\tdepth - {}", id, curDepth);
+
+    var src = new FriendDto(id, curDepth);
+
+    var response = vkClient.getUserFriendList(token, id);
+    sleep();
+    if (response.getError() != null) {
+      return;
+    }
+    var friends = response.getResponse().getItems();
+    friends.forEach(friend ->
+        graph.addEdge(src, new FriendDto(friend, depth), true)
+    );
+
+    for (var friend : friends) {
+      addFriends(token, friend, curDepth + 1, depth);
+    }
+  }
+
+  private void sleep() {
+    try {
+      Thread.sleep(500);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 }

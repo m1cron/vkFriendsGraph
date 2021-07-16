@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Vertex {
+public class Vertex<T> {
 
-  private String label;
+  private T label;
 }

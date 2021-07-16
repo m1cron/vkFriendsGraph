@@ -11,7 +11,6 @@ springBoot {
 dependencies {
     //Spring starters
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation "org.springframework.boot:spring-boot-starter-undertow"
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
 
@@ -20,17 +19,8 @@ dependencies {
     implementation "io.springfox:springfox-swagger-ui:$ver.swagger2"
     implementation "io.swagger.core.v3:swagger-annotations:$ver.swaggerAnnotations"
 
-    //Jackson
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$ver.jacksonDataType"
-    implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$ver.jacksonDataType"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-joda:$ver.jacksonDataType"
-
-    //Logback
-    implementation "ch.qos.logback:logback-classic:$ver.logback"
-    implementation "net.logstash.logback:logstash-logback-encoder:$ver.logstashLogbackEncoder"
-
-    //Apache commons
-    implementation "org.apache.commons:commons-lang3:$ver.apacheCommonsLang"
+    //Validation
+    implementation "javax.validation:validation-api:$ver.validationApi"
 
     //Lombok
     compileOnly "org.projectlombok:lombok:$ver.lombok"
@@ -38,15 +28,3 @@ dependencies {
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 }
-
-configurations.all {
-    all*.exclude group: 'com.vaadin.external.google'
-    all*.exclude group: "commons-logging", module: "commons-logging"
-    all*.exclude group: "log4j"
-    all*.exclude group: "org.apache.logging.log4j"
-    all*.exclude group: "org.slf4j", module: "slf4j-log4j12"
-    all*.exclude group: "org.slf4j", module: "slf4j-simple"
-    all*.exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
-}
-
-sourceSets.main.java.srcDir "${buildDir}/generated/sources/src/main/java"

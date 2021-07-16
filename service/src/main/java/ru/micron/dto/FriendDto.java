@@ -11,6 +11,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class FriendDto {
 
-  private Long id;
-  private Long depth;
+  private long id;
+  private int depth;
 }

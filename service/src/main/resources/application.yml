@@ -11,11 +11,17 @@ server:
       charset: UTF-8
   max-http-header-size: 131072
 
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 30000
+        readTimeout: 30000
+        loggerLevel: FULL
+
 spring:
   application:
     name: vkFriendsGraph
-  profiles:
-    include: token
   main:
     banner-mode: 'off'
     allow-bean-definition-overriding: true

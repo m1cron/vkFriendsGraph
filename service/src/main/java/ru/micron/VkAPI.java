@@ -19,22 +19,10 @@ public class VkAPI {
   private void getFriends(Integer id, int deep) {
     if (deep - 1 == MAX_DEEP) return;
 
-    String stringJson = readStringFromURL(parseLink(id));
-    JsonObject response = GSON.fromJson(stringJson, JsonObject.class);
-    if (response.isJsonNull() || response.has("error")) return;
-
     JsonArray friendsJsonArray = response.getAsJsonObject("response").getAsJsonArray("items");
     for (JsonElement jsonElement : friendsJsonArray) {
       GRAPH.addEdge(deep, id, jsonElement.getAsInt(), true);
     }
-    System.out.println(
-        "======= "
-            + id
-            + " ======= | DEEP >> "
-            + deep
-            + " |\t"
-            + "\t| threads count >>\t"
-            + Thread.activeCount());
 
     for (JsonElement jsonElement : friendsJsonArray) {
       threadPool.invoke(
@@ -64,14 +52,6 @@ sqlVk.add(
               GRAPH.hasVertex(ids.get(i)) ? GRAPH.getMap().get(ids.get(i)).getKey() : 0));
 
     }
-  }
-
-  private String parseLink(Integer id) {
-    return new StringBuilder("https://api.vk.com/method/friends.get?v=5.124&access_token=")
-        .append(ACCESS_TOKEN)
-        .append("&user_id=")
-        .append(id)
-        .toString();
   }
 }
 */

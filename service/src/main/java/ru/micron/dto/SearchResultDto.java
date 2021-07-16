@@ -12,6 +12,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class SearchResultDto {
 
-  private String sourceId;
+  private Long sourceId;
   private List<FriendDto> friends;
 }

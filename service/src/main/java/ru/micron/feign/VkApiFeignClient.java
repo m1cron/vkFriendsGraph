@@ -15,6 +15,6 @@ public interface VkApiFeignClient {
   @GetMapping("/friends.get?v=5.124")
   BasicResponse<VkFriendResponseDto> getUserFriendList(
       @RequestParam("access_token") String token,
-      @RequestParam(value = "user_id", required = false) String userId
+      @RequestParam(value = "user_id", required = false) Long userId
   );
 }
