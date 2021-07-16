@@ -1,39 +1,24 @@
-# vkFriendsGraph
-### Java Junior task
+# VK Friends Graph
 
-`Входные данные:` <br/>
-<pre>
-Текстовый файл, подается как параметр main метода,
-Первый ID VK исследуемый, остальные - с кем.
-</pre>
+Сервис по получению глубины связи друзья-друзей </br>
+в социальной сети Вконтакте
 
-`Результат:` <br/>
-`````
-Файл-CSV:
-            <ID 1>
-            <ID 2>
-            <расстояние (0 - нет связи, 1 - прямая связь, 2 и более - кол-во ребер, через друзей-друзей)
-            -1 - неизвестно)>
+### Swagger API Documentation: </br>
+http://localhost:8080/swagger-ui.html
 
-Пример:
-        1,2,0
-        1,3,1
-        1,4,2
-`````
-
-`Требования:` <br/>
-- Тестирование jUnit с максимальным покрытием кода
-- Сохранить в БД (MySQL/PostgreSQL/Redis)
-- Использовать VK API
-- Собрать на Maven
-
-`Видео с таском` <br/>
-[![Видео](https://img.youtube.com/vi/wMRJy6RmdwU/0.jpg)](https://youtu.be/wMRJy6RmdwU)
-
-`Использование:` <br/>
+### Build:
 ```
 $ git clone https://github.com/m1cron/vkFriendsGraph
 $ cd vkFriendsGraph
-$ mvn package
-$ java -jar vkFriendsGraph-1.0.jar [id's txt file] [out.csv] [search depth] [VK API token]
+$ gradlew
+```
+
+### Stack:
+```
+Java 11
+Spring Boot 2
+Spring Cloud Netflix: Feign Clients
+Swagger 2.0
+Gradle 7.1.1
+Logback
 ```

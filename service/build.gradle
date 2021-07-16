@@ -1,0 +1,30 @@
+archivesBaseName = rootProject.name
+group = parent.group
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+springBoot {
+    mainClassName = "${servicePackage}.Application"
+}
+
+dependencies {
+    //Spring starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
+
+    //Swagger
+    implementation "io.springfox:springfox-swagger2:$ver.swagger2"
+    implementation "io.springfox:springfox-swagger-ui:$ver.swagger2"
+    implementation "io.swagger.core.v3:swagger-annotations:$ver.swaggerAnnotations"
+
+    //Validation
+    implementation "javax.validation:validation-api:$ver.validationApi"
+
+    //Lombok
+    compileOnly "org.projectlombok:lombok:$ver.lombok"
+    annotationProcessor "org.projectlombok:lombok:$ver.lombok"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+}

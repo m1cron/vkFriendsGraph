@@ -1,0 +1,25 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+  <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+  <property name="LOG_DIR" value="logs"/>
+
+  <logger level="info" name="ru.micron"/>
+  <logger level="warn" name="sun"/>
+  <logger level="warn" name="org.xnio"/>
+  <logger level="warn" name="org.apache"/>
+  <logger level="warn" name="com.netflix"/>
+  <logger level="warn" name="com.sun.jersey"/>
+  <logger level="info" name="org.springframework"/>
+  <logger level="warn" name="org.postgresql"/>
+  <logger level="info" name="org.hibernate"/>
+  <logger level="info" name="com.fasterxml.jackson"/>
+  <logger level="warn" name="io.undertow.request.io"/>
+  <springProperty defaultValue="vkFriendsGraph" name="appName" scope="context"
+                  source="spring.application.name"/>
+
+  <root level="info">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+
+</configuration>
